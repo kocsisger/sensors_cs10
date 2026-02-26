@@ -41,12 +41,23 @@ public class MainActivity extends AppCompatActivity {
         List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         lightSensorEventListener = new LightSensorEventListener();
-        sensorManager.registerListener(lightSensorEventListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         sensorsTextView = findViewById(R.id.sensorsTextView);
         lightSensorTextView = findViewById(R.id.lightSensorTextView);
         //sensorsTextView.setMovementMethod(new ScrollingMovementMethod());
         sensorsTextView.setText(sensorList.toString());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(lightSensorEventListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(lightSensorEventListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private class LightSensorEventListener implements SensorEventListener {
@@ -56,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             Log.d("SENSOR_TEST", "Lux: " + sensorEvent.values[0]);
+            lightSensorTextView.setText("Lux: " + sensorEvent.values[0]);
         }
     }
 }
