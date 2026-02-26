@@ -1,9 +1,12 @@
 package hu.unideb.inf.sensors;
 
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -17,8 +20,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     SensorManager sensorManager;
+    Sensor lightSensor;
+    SensorEventListener lightSensorEventListener;
 
     TextView sensorsTextView;
+    TextView lightSensorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +39,23 @@ public class MainActivity extends AppCompatActivity {
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        lightSensorEventListener = new LightSensorEventListener();
+        sensorManager.registerListener(lightSensorEventListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         sensorsTextView = findViewById(R.id.sensorsTextView);
+        lightSensorTextView = findViewById(R.id.lightSensorTextView);
         //sensorsTextView.setMovementMethod(new ScrollingMovementMethod());
         sensorsTextView.setText(sensorList.toString());
+    }
+
+    private class LightSensorEventListener implements SensorEventListener {
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {}
+
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            Log.d("SENSOR_TEST", "Lux: " + sensorEvent.values[0]);
+        }
     }
 }
